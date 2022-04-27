@@ -5,3 +5,5 @@
 **/.vs/OktaDemo
 **/obj
 **/bin
+**/OktaDemo.csproj.user
+**/.vs
