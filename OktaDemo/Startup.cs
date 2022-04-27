@@ -8,6 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Okta.AspNetCore;
+
 
 namespace OktaDemo
 {
@@ -23,6 +27,27 @@ namespace OktaDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+            })
+            .AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+        .AddCookie()
+        .AddOktaMvc(new OktaMvcOptions
+        {
+            // Replace these values with your Okta configuration
+            OktaDomain = Configuration.GetValue<string>("Okta:OktaDomain"),
+            AuthorizationServerId = Configuration.GetValue<string>("Okta:AuthorizationServerId"),
+            ClientId = Configuration.GetValue<string>("Okta:ClientId"),
+            ClientSecret = Configuration.GetValue<string>("Okta:ClientSecret"),
+            Scope = new List<string> { "openid", "profile", "email" },
+        });
+
             services.AddControllersWithViews();
         }
 
@@ -43,7 +68,7 @@ namespace OktaDemo
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
