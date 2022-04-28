@@ -1,4 +1,5 @@
 ﻿using Auth0Demo.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -32,6 +33,12 @@ namespace Auth0Demo.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [Authorize]
+        public IActionResult Profile()
+        {
+            return View(HttpContext.User.Claims);
         }
     }
 }

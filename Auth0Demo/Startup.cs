@@ -1,3 +1,4 @@
+using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -23,6 +24,12 @@ namespace Auth0Demo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuth0WebAppAuthentication(options =>
+            {
+                options.Domain = Configuration["Auth0:Domain"];
+                options.ClientId = Configuration["Auth0:ClientId"];
+            });
+
             services.AddControllersWithViews();
         }
 
@@ -43,7 +50,7 @@ namespace Auth0Demo
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
