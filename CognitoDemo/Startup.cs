@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -23,6 +25,21 @@ namespace CognitoDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+ .AddCookie()
+ .AddOpenIdConnect(options =>
+ {
+     options.ResponseType = "code";
+     options.MetadataAddress = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_lxoIDlhv4/.well-known/openid-configuration";
+     options.ClientId = "6ji8plf05s31j3eu2gvtll19se";
+     options.ClientSecret = "1pv2ng67mi7rai2j913qn65mdtc45qsqm3pfkb2an1rmbpvtecga";
+     
+ });
 
             services.AddControllersWithViews();
         }
